@@ -49,7 +49,7 @@ namespace IMEPlugin
                 ImGui.Separator();
                 for(int i = 0; i< _plugin.ImmCand.Count; i++)
                 {
-                    ImGui.Text($"{i}. {_plugin.ImmCand[i]}");
+                    ImGui.Text($"{i+1}. {_plugin.ImmCand[i]}");
                 }
             }
             ImGui.End();

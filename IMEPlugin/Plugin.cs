@@ -91,6 +91,7 @@ namespace IMEPlugin
                         switch ((IMECommand)wParam)
                         {
                             case IMECommand.IMN_CHANGECANDIDATE:
+                                this.ui.Visible = true;
                                 if (hWnd == IntPtr.Zero)
                                     return 0;
                                 var hIMC = Imm.ImmGetContext(hWnd);
@@ -142,8 +143,6 @@ namespace IMEPlugin
                             case IMECommand.IMN_CLOSECANDIDATE:
                                 this.ui.Visible = false;
                                 this.ImmCand.Clear();
-                                break;
-                            case IMECommand.IMN_SETCONVERSIONMODE:
                                 break;
                             default:
                                 break;
@@ -231,6 +230,7 @@ namespace IMEPlugin
                     }
                     else
                     {
+                        this.ui.Visible = false;
                         this.ImmFuncHook.Disable();
                     }
                 }
