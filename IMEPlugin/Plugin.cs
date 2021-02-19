@@ -164,6 +164,7 @@ namespace IMEPlugin
                             io.AddInputCharactersUTF8(lpstr);
                             this.ImmComp = "";
                             this.ImmCand.Clear();
+                            this.ui.Visible = false;
                         }
                         if (((long)(IMEComposition.GCS_COMPSTR | IMEComposition.GCS_COMPATTR | IMEComposition.GCS_COMPCLAUSE |
                             IMEComposition.GCS_COMPREADATTR | IMEComposition.GCS_COMPREADCLAUSE | IMEComposition.GCS_COMPREADSTR) & lParam) > 0)
@@ -179,6 +180,8 @@ namespace IMEPlugin
                             Marshal.FreeHGlobal(unmanagedPointer);
                             string lpstr = Encoding.Unicode.GetString(bytes);
                             this.ImmComp = lpstr;
+                            if(lpstr == "")
+                                this.ui.Visible = false;
                         }
                         break;
 
@@ -230,7 +233,6 @@ namespace IMEPlugin
                     }
                     else
                     {
-                        this.ui.Visible = false;
                         this.ImmFuncHook.Disable();
                     }
                 }
