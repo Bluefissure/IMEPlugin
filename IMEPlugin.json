@@ -5,7 +5,7 @@
     "Description": "Adds an overlay to support IME in dalamud input.",
     "Tags": [ "Input", "IME", "Util", "UI"],
 	"RepoUrl": "https://github.com/Bluefissure/IMEPlugin",
-    "AssemblyVersion": "1.0.0.0",
+    "AssemblyVersion": "1.0.3.0",
 	"ApplicableVersion": "any",
 	"DalamudApiLevel": 2
 }
