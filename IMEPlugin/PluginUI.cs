@@ -43,7 +43,7 @@ namespace IMEPlugin
             }
 
             ImGui.SetNextWindowSize(new Vector2(100, 200), ImGuiCond.FirstUseEver);
-            if (ImGui.Begin("IME Plugin", ref this.visible, ImGuiWindowFlags.NoTitleBar))
+            if (ImGui.Begin("IME Plugin", ref this.visible, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoFocusOnAppearing))
             {
                 ImGui.Text(_plugin.ImmComp);
                 ImGui.Separator();
