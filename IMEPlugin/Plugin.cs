@@ -14,7 +14,7 @@ namespace IMEPlugin
 {
     public unsafe class Plugin : IDalamudPlugin
     {
-        public string Name => "Sample Plugin";
+        public string Name => "IMEPlugin";
         public List<string> ImmCand = new List<string>();
         public string ImmComp = "";
         private PluginUI ui;
@@ -209,7 +209,7 @@ namespace IMEPlugin
 
             if (_oldWndProcPtr != IntPtr.Zero)
             {
-                Win32.SetWindowLongPtr(_hWnd, WindowLongType.GWL_WNDPROC, _oldWndProcPtr);
+                // Win32.SetWindowLongPtr(_hWnd, WindowLongType.GWL_WNDPROC, _oldWndProcPtr);
                 _oldWndProcPtr = IntPtr.Zero;
             }
 
