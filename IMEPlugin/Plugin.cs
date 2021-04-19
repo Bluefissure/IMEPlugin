@@ -209,7 +209,7 @@ namespace IMEPlugin
 
             if (_oldWndProcPtr != IntPtr.Zero)
             {
-                // Win32.SetWindowLongPtr(_hWnd, WindowLongType.GWL_WNDPROC, _oldWndProcPtr);
+                Win32.SetWindowLongPtr(_hWnd, WindowLongType.GWL_WNDPROC, _oldWndProcPtr);
                 _oldWndProcPtr = IntPtr.Zero;
             }
 
