@@ -10,9 +10,9 @@
       "UI"
     ],
     "RepoUrl": "https://github.com/Bluefissure/IMEPlugin",
-    "AssemblyVersion": "1.0.7.0",
+    "AssemblyVersion": "1.0.8.0",
     "ApplicableVersion": "any",
-    "DalamudApiLevel": 5,
+    "DalamudApiLevel": 6,
     "IsHide": "False",
     "IsTestingExclusive": "False",
     "DownloadCount": 0,
