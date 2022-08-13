@@ -39,19 +39,21 @@ namespace IMEPlugin
             Config.Initialize(PluginInterface);
 
             this.InGameIMEFunc = SigScanner.ScanText("40 53 48 83 EC 20 41 C7 00 ?? ?? ?? ??");
-            this.IsDirectChatFunc = SigScanner.ScanText("40 56 48 83 EC 30 80 79 1C 00");
+            //this.IsDirectChatFunc = SigScanner.ScanText("40 56 48 83 EC 30 80 79 1C 00");
             PluginLog.Log($"===== I M E P L U G I N =====");
             PluginLog.Log($"InGameIMEFunc addr:{InGameIMEFunc:X}");
-            PluginLog.Log($"IsDirectChatFunc addr:{IsDirectChatFunc:X}");
+            //PluginLog.Log($"IsDirectChatFunc addr:{IsDirectChatFunc:X}");
 
             this.InGameIMEFuncHook = new Hook<InGameIMEFuncDelegate>(
                 InGameIMEFunc,
                 new InGameIMEFuncDelegate(InGameIMEFuncDetour)
             );
+            /*
             this.IsDirectChatFuncHook = new Hook<IsDirectChatFuncDelegate>(
                 IsDirectChatFunc,
                 new IsDirectChatFuncDelegate(IsDirectChatFuncDetour)
             );
+            */
 
             Gui = new PluginUi(this);
 
@@ -61,7 +63,7 @@ namespace IMEPlugin
             });
 
             this.InGameIMEFuncHook.Enable();
-            this.IsDirectChatFuncHook.Enable();
+            //this.IsDirectChatFuncHook.Enable();
         }
 
         public void CommandHandler(string command, string arguments)
@@ -79,13 +81,18 @@ namespace IMEPlugin
         {
             if (Config.UseSystemIME)
             {
-                return 0x80070057;
+                if (ImGui.GetIO().WantTextInput)
+                    return 0x80070057;
+                else
+                {
+                    InGameIMEFuncHook.Original(a1, a2, a3);
+                }
             }
             return InGameIMEFuncHook.Original(a1, a2, a3);
         }
         private char IsDirectChatFuncDetour(Int64 a1)
         {
-            if (Config.DirectChatMode)
+            if (Config.DirectChatMode && ImGui.GetIO().WantTextInput)
             {
                 return (char)0;
             }
@@ -95,10 +102,10 @@ namespace IMEPlugin
         public void Dispose()
         {
             this.InGameIMEFuncHook.Disable();
-            this.IsDirectChatFuncHook.Disable();
+            // this.IsDirectChatFuncHook.Disable();
             CommandManager.RemoveHandler("/imeplugin");
             Gui?.Dispose();
-            PluginInterface?.Dispose();
+            // PluginInterface?.Dispose();
         }
 
     }

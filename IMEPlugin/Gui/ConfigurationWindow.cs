@@ -36,6 +36,7 @@ namespace IMEPlugin.Gui
             ImGui.SetNextWindowSize(new Vector2(530, 160), ImGuiCond.Appearing);
             if (ImGui.Begin($"{Plugin.Name} Panel", ref WindowVisible, ImGuiWindowFlags.NoScrollWithMouse))
             {
+                /*
                 var DirectChatMode = Config.DirectChatMode;
                 if (ImGui.Checkbox("Direct Chat Mode", ref DirectChatMode))
                 {
@@ -44,6 +45,7 @@ namespace IMEPlugin.Gui
                 }
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Click this if you are using direct chat mode with controller.");
+                */
                 var UseSystemIME = Config.UseSystemIME;
                 if (ImGui.Checkbox("Use System IME", ref UseSystemIME))
                 {
