@@ -1,0 +1,23 @@
+[{
+    "Author": "Bluefissure",
+    "Name": "IMEPlugin",
+    "InternalName": "IMEPlugin",
+    "Description": "Fallback in-game IME to system IME.",
+    "Tags": [
+      "Input",
+      "IME",
+      "Util",
+      "UI"
+    ],
+    "RepoUrl": "https://github.com/Bluefissure/IMEPlugin",
+    "AssemblyVersion": "1.0.5.0",
+    "ApplicableVersion": "any",
+    "DalamudApiLevel": 6,
+    "IsHide": "False",
+    "IsTestingExclusive": "False",
+    "DownloadCount": 0,
+    "LastUpdate": "1645336898",
+    "DownloadLinkInstall": "https://github.com/Bluefissure/IMEPlugin/releases/download/v1.0.5.0/IMEPlugin.zip",
+    "DownloadLinkTesting": "https://github.com/Bluefissure/IMEPlugin/releases/download/v1.0.5.0/IMEPlugin.zip",
+    "DownloadLinkUpdate": "https://github.com/Bluefissure/IMEPlugin/releases/download/v1.0.5.0/IMEPlugin.zip"
+  }]
