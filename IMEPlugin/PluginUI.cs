@@ -6,7 +6,7 @@ namespace IMEPlugin
 {
     class PluginUI : IDisposable
     {
-        private Plugin _plugin;
+        private IMEPlugin _plugin;
 
         private bool visible = false;
         public bool Visible
@@ -21,9 +21,10 @@ namespace IMEPlugin
             get { return this.settingsVisible; }
             set { this.settingsVisible = value; }
         }
-        public PluginUI(Plugin plugin)
+        public PluginUI(IMEPlugin plugin)
         {
             this._plugin = plugin;
+            plugin.PluginInterface.UiBuilder.Draw += Draw;
         }
 
         public void Dispose()
@@ -43,7 +44,7 @@ namespace IMEPlugin
             }
 
             ImGui.SetNextWindowSize(new Vector2(100, 200), ImGuiCond.FirstUseEver);
-            if (ImGui.Begin("IME Plugin", ref this.visible, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoFocusOnAppearing))
+            if (ImGui.Begin("IME Plugin Legacy", ref this.visible, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoFocusOnAppearing))
             {
                 ImGui.Text(_plugin.ImmComp);
                 ImGui.Separator();

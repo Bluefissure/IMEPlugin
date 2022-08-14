@@ -8,21 +8,31 @@ using System.Text;
 using System.Threading;
 using IMEPlugin.Win32_Utils;
 using System.Collections.Generic;
+using Dalamud.Game;
+using Dalamud.IoC;
+using Dalamud.Logging;
+using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.Network;
 using static IMEPlugin.Win32_Utils.Imm;
 
 namespace IMEPlugin
 {
-    public unsafe class Plugin : IDalamudPlugin
+    public unsafe class IMEPlugin : IDalamudPlugin
     {
         public string Name => "IMEPlugin";
         public List<string> ImmCand = new List<string>();
         public string ImmComp = "";
-        private PluginUI ui;
+        private PluginUI Gui { get; set; }
+
+
+        [PluginService] public DalamudPluginInterface PluginInterface { get; set; }
+        [PluginService] public Condition Conditions { get; set; }
+        [PluginService] public SigScanner SigScanner { get; set; }
+        [PluginService] public CommandManager CommandManager { get; set; }
+        [PluginService] public GameNetwork GameNetwork { get; set; }
 
         private const string commandName = "/ime";
 
-        private DalamudPluginInterface pi;
-        private Thread thread;
         private bool threadRunning = false;
 
         delegate long WndProcDelegate(IntPtr hWnd, uint msg, ulong wParam, long lParam);
@@ -33,13 +43,11 @@ namespace IMEPlugin
         private IntPtr ImmFunc;
         private delegate char ImmFuncDelegate(Int64 a1, char a2, byte a3);
         private Hook<ImmFuncDelegate> ImmFuncHook;
-
-        public void Initialize(DalamudPluginInterface pluginInterface)
+        public IMEPlugin()
         {
-            this.pi = pluginInterface;
-            this._hWnd = this.pi.UiBuilder.WindowHandlePtr;
+            this._hWnd = PluginInterface.UiBuilder.WindowHandlePtr;
 
-            this.ImmFunc = this.pi.TargetModuleScanner.ScanText("E8 ?? ?? ?? ?? 84 C0 75 10 48 83 FF 09");
+            this.ImmFunc = SigScanner.ScanText("E8 ?? ?? ?? ?? 84 C0 75 10 48 83 FF 09");
 
             this.ImmFuncHook = new Hook<ImmFuncDelegate>(
                 ImmFunc,
@@ -52,14 +60,11 @@ namespace IMEPlugin
 
             InitializeWndProc();
 
-            this.thread = new Thread(new ThreadStart(this.Loop));
-            this.thread.Start();
             this.threadRunning = true;
 
 
-            this.ui = new PluginUI(this);
-            this.pi.UiBuilder.OnBuildUi += DrawUI;
-            this.pi.CommandManager.AddHandler(commandName, new CommandInfo(OnCommand)
+            Gui = new PluginUI(this);
+            CommandManager.AddHandler(commandName, new CommandInfo(OnCommand)
             {
                 HelpMessage = "Shows the IME panel"
             });
@@ -67,7 +72,7 @@ namespace IMEPlugin
 
         private void OnCommand(string command, string args)
         {
-            this.ui.Visible = !this.ui.Visible;
+            Gui.Visible = !Gui.Visible;
         }
 
         #region WndProc
@@ -91,7 +96,7 @@ namespace IMEPlugin
                         switch ((IMECommand)wParam)
                         {
                             case IMECommand.IMN_CHANGECANDIDATE:
-                                this.ui.Visible = true;
+                                Gui.Visible = true;
                                 if (hWnd == IntPtr.Zero)
                                     return 0;
                                 var hIMC = Imm.ImmGetContext(hWnd);
@@ -137,11 +142,11 @@ namespace IMEPlugin
                                 }
                                 break;
                             case IMECommand.IMN_OPENCANDIDATE:
-                                this.ui.Visible = true;
+                                Gui.Visible = true;
                                 this.ImmCand.Clear();
                                 break;
                             case IMECommand.IMN_CLOSECANDIDATE:
-                                this.ui.Visible = false;
+                                Gui.Visible = false;
                                 this.ImmCand.Clear();
                                 break;
                             default:
@@ -164,7 +169,7 @@ namespace IMEPlugin
                             io.AddInputCharactersUTF8(lpstr);
                             this.ImmComp = "";
                             this.ImmCand.Clear();
-                            this.ui.Visible = false;
+                            Gui.Visible = false;
                         }
                         if (((long)(IMEComposition.GCS_COMPSTR | IMEComposition.GCS_COMPATTR | IMEComposition.GCS_COMPCLAUSE |
                             IMEComposition.GCS_COMPREADATTR | IMEComposition.GCS_COMPREADCLAUSE | IMEComposition.GCS_COMPREADSTR) & lParam) > 0)
@@ -181,7 +186,7 @@ namespace IMEPlugin
                             string lpstr = Encoding.Unicode.GetString(bytes);
                             this.ImmComp = lpstr;
                             if(lpstr == "")
-                                this.ui.Visible = false;
+                                Gui.Visible = false;
                         }
                         break;
 
@@ -196,16 +201,24 @@ namespace IMEPlugin
 
         private char ImmFuncDetour(Int64 a1, char a2, byte a3)
         {
-            char ret = this.ImmFuncHook.Original(a1, a2, a3);
-            return (char)0;
+            try
+            {
+                char ret = this.ImmFuncHook.Original(a1, a2, a3);
+                if (ImGui.GetIO().WantTextInput)
+                {
+                    return (char)0;
+                }
+                return ret;
+            } catch {
+                PluginLog.Information("[IME Plugin] Please don't crash in hook.");
+            }
+            return this.ImmFuncHook.Original(a1, a2, a3);
         }
 
         public void Dispose()
         {
 
-            this.ui.Dispose();
-            this.threadRunning = false;
-            this.thread.Abort();
+            Gui.Dispose();
 
             if (_oldWndProcPtr != IntPtr.Zero)
             {
@@ -215,8 +228,7 @@ namespace IMEPlugin
 
             this.ImmFuncHook.Disable();
 
-            this.pi.CommandManager.RemoveHandler(commandName);
-            this.pi.Dispose();
+            CommandManager.RemoveHandler(commandName);
 
         }
 
@@ -243,7 +255,7 @@ namespace IMEPlugin
         }
         private void DrawUI()
         {
-            this.ui.Draw();
+            Gui.Draw();
         }
 
     }
