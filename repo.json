@@ -2,7 +2,7 @@
     "Author": "Bluefissure",
     "Name": "IMEPlugin",
     "InternalName": "IMEPlugin",
-    "Description": "Fallback in-game IME to system IME.",
+    "Description": "Legacy Dalamud IME support.",
     "Tags": [
       "Input",
       "IME",
